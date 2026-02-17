@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Media Auto Poster with YouTube</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+        }
+        h1 { text-align: center; color: #333; margin-bottom: 10px; font-size: 2.5em; }
+        .subtitle { text-align: center; color: #666; margin-bottom: 30px; }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .tab {
+            padding: 15px 30px;
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+        .tab:hover { color: #667eea; }
+        .tab.active { color: #667eea; border-bottom-color: #667eea; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .form-group { margin-bottom: 25px; }
+        label { display: block; margin-bottom: 8px; color: #333; font-weight: 600; font-size: 14px; }
+        textarea, input[type="text"], input[type="datetime-local"], input[type="url"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+        textarea { resize: vertical; min-height: 100px; }
+        textarea:focus, input:focus { outline: none; border-color: #667eea; }
+        .ai-section {
+            background: #f0f8ff;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .ai-section h3 { color: #667eea; margin-bottom: 15px; }
+        .ai-input-group { display: flex; gap: 10px; margin-bottom: 15px; }
+        .ai-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-ai {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-ai:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .btn-ai:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .platforms {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        .platform-option {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .platform-option:hover { background: #e9ecef; border-color: #667eea; }
+        .platform-option input[type="checkbox"] {
+            margin-right: 10px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        .platform-option.selected { background: #e7f0ff; border-color: #667eea; }
+        .platform-captions {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        .platform-captions h4 { color: #333; margin-bottom: 15px; }
+        .platform-caption-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+        .platform-caption-item label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .youtube-fields {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        .youtube-fields label {
+            display: block;
+            margin: 10px 0 5px 0;
+            color: #856404;
+            font-weight: 600;
+        }
+        .youtube-fields select, .youtube-fields input, .youtube-fields textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .headless-option {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .headless-option input[type="checkbox"] {
+            margin-right: 10px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        .schedule-section {
+            background: #f0f8ff;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .schedule-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .quick-schedule {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        .quick-btn {
+            padding: 8px 16px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .quick-btn:hover { background: #5568d3; transform: translateY(-2px); }
+        .btn-post, .btn-schedule {
+            width: 100%;
+            padding: 18px;
+            color: white;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+        .btn-post { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .btn-schedule { background: linear-gradient(135deg, #28a745 0%, #20c997 100%); }
+        .btn-post:hover, .btn-schedule:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        .btn-post:disabled, .btn-schedule:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .loader { display: none; text-align: center; margin: 20px 0; }
+        .loader.active { display: block; }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .info-box {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .info-box strong { display: block; margin-bottom: 5px; }
+        .results {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: none;
+        }
+        .results h3 { margin-bottom: 15px; color: #333; }
+        .result-item {
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .result-item.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .result-item.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .scheduled-posts-list {
+            margin-top: 20px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .scheduled-post-item {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+        .scheduled-post-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .scheduled-post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .scheduled-time {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 16px;
+        }
+        .status-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-scheduled { background: #fff3cd; color: #856404; }
+        .status-completed { background: #d4edda; color: #155724; }
+        .scheduled-caption {
+            color: #666;
+            margin: 10px 0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .scheduled-platforms {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+            flex-wrap: wrap;
+        }
+        .platform-badge {
+            padding: 5px 12px;
+            background: #e7f0ff;
+            color: #667eea;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .post-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .btn-cancel {
+            padding: 8px 20px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .btn-cancel:hover { background: #c82333; transform: translateY(-2px); }
+        .platform-captions-container { display: none; }
+        .platform-captions-container.show { display: block; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Social Media Auto Poster</h1>
+        <p class="subtitle">Post to multiple platforms with AI-generated captions and scheduling</p>
+
+        <div class="info-box">
+            <strong>📝 Setup Instructions:</strong>
+            1. Export cookies: linkedin_cookies.json, twitter_cookies.json, instagram_cookies.json, facebook_cookies.json, pinterest_cookies.json, <strong>youtube_cookies.json</strong><br>
+            2. Place cookie files in the same folder as app.py<br>
+            3. Set your GROQ_API_KEY environment variable<br>
+            <strong>⚠️ For YouTube: Export cookies while logged in to YouTube Studio</strong>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" data-tab="post-now">📤 Post Now</button>
+            <button class="tab" data-tab="schedule">⏰ Schedule Post</button>
+            <button class="tab" data-tab="scheduled-posts">📋 Scheduled Posts</button>
+        </div>
+
+        <!-- Post Now Tab -->
+        <div class="tab-content active" id="post-now">
+            <form id="postForm" enctype="multipart/form-data">
+                <!-- AI Caption Generator -->
+                <div class="ai-section">
+                    <h3>✨ Professional AI Caption Generator</h3>
+                    <div class="ai-input-group">
+                        <input type="text" id="aiPrompt" class="ai-input" placeholder="Describe your post">
+                        <button type="button" class="btn btn-ai" id="generateAllBtn">Generate All Captions</button>
+                    </div>
+                </div>
+
+                <!-- Platform Selection -->
+                <div class="form-group">
+                    <label>🌐 Select Platforms *</label>
+                    <div class="platforms">
+                        <label class="platform-option">
+                            <input type="checkbox" name="platforms" value="linkedin" class="platform-checkbox">
+                            <span>💼 LinkedIn</span>
+                        </label>
+                        <label class="platform-option">
+                            <input type="checkbox" name="platforms" value="twitter" class="platform-checkbox">
+                            <span>🐦 Twitter/X</span>
+                        </label>
+                        <label class="platform-option">
+                            <input type="checkbox" name="platforms" value="instagram" class="platform-checkbox">
+                            <span>📸 Instagram</span>
+                        </label>
+                        <label class="platform-option">
+                            <input type="checkbox" name="platforms" value="facebook" class="platform-checkbox">
+                            <span>👥 Facebook</span>
+                        </label>
+                        <label class="platform-option">
+                            <input type="checkbox" name="platforms" value="pinterest" class="platform-checkbox">
+                            <span>📌 Pinterest</span>
+                        </label>
+                        <label class="platform-option">
+                            <input type="checkbox" name="platforms" value="youtube" class="platform-checkbox">
+                            <span>🎬 YouTube Video</span>
+                        </label>
+                        <label class="platform-option">
+                            <input type="checkbox" name="platforms" value="youtubepost" class="platform-checkbox">
+                            <span>📺 YouTube Post</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Platform-Specific Captions -->
+                <div class="platform-captions-container" id="platformCaptionsContainer">
+                    <div class="platform-captions">
+                        <h4>📝 Platform-Specific Captions</h4>
+                        
+                        <div class="platform-caption-item" id="caption-linkedin" style="display: none;">
+                            <label><span>💼 LinkedIn Caption</span></label>
+                            <textarea name="caption_linkedin" placeholder="Professional caption for LinkedIn..."></textarea>
+                        </div>
+
+                        <div class="platform-caption-item" id="caption-twitter" style="display: none;">
+                            <label><span>🐦 Twitter Caption</span></label>
+                            <textarea name="caption_twitter" placeholder="Engaging caption for Twitter..."></textarea>
+                        </div>
+
+                        <div class="platform-caption-item" id="caption-instagram" style="display: none;">
+                            <label><span>📸 Instagram Caption</span></label>
+                            <textarea name="caption_instagram" placeholder="Visual caption for Instagram..."></textarea>
+                        </div>
+
+                        <div class="platform-caption-item" id="caption-facebook" style="display: none;">
+                            <label><span>👥 Facebook Caption</span></label>
+                            <textarea name="caption_facebook" placeholder="Friendly caption for Facebook..."></textarea>
+                        </div>
+
+                        <div class="platform-caption-item" id="caption-pinterest" style="display: none;">
+                            <label><span>📌 Pinterest Title</span></label>
+                            <input type="text" name="pinterest_title" maxlength="100" placeholder="Descriptive title..." style="width: 100%; padding: 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 16px; margin-bottom: 10px;">
+                            <label><span>🔗 Link (optional)</span></label>
+                            <input type="url" name="pinterest_link" placeholder="https://..." style="width: 100%; padding: 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 16px; margin-bottom: 10px;">
+                            <label><span>📝 Description</span></label>
+                            <textarea name="caption_pinterest" placeholder="Additional description..."></textarea>
+                        </div>
+
+                        <div class="platform-caption-item" id="caption-youtube" style="display: none;">
+                            <label><span>🎬 YouTube Video Details</span></label>
+                            <div class="youtube-fields">
+                                <label>Video Title (max 100 chars) *</label>
+                                <input type="text" name="youtube_title" maxlength="100" placeholder="Video title...">
+                                <label>Description</label>
+                                <textarea name="youtube_description" rows="4" placeholder="Video description..."></textarea>
+                                <label>Visibility</label>
+                                <select name="youtube_visibility">
+                                    <option value="public">Public</option>
+                                    <option value="unlisted">Unlisted</option>
+                                    <option value="private">Private</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="platform-caption-item" id="caption-youtubepost" style="display: none;">
+                            <label><span>📺 YouTube Community Post Caption</span></label>
+                            <textarea name="caption_youtubepost" placeholder="Caption for YouTube Community post..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Media Upload -->
+                <div class="form-group">
+                    <label>📷 Upload Image/Video</label>
+                    <input type="file" id="imageInput" name="image" accept="image/*,video/*" style="padding: 10px; border: 2px solid #e0e0e0; border-radius: 10px;">
+                    <div id="fileName" style="margin-top: 10px; color: #666; font-size: 14px;"></div>
+                </div>
+
+                <!-- Headless Option -->
+                <div class="headless-option">
+                    <input type="checkbox" id="headless" name="headless" checked>
+                    <label for="headless">🎭 Run in headless mode</label>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-post" id="postBtn">🚀 Post Now</button>
+            </form>
+
+            <!-- Loader -->
+            <div class="loader" id="loader">
+                <div class="spinner"></div>
+                <p style="margin-top: 10px; color: #666;">Posting...</p>
+            </div>
+
+            <!-- Results -->
+            <div class="results" id="results">
+                <h3>📊 Results</h3>
+                <div id="resultsList"></div>
+            </div>
+        </div>
+
+        <!-- Schedule Post Tab -->
+        <div class="tab-content" id="schedule">
+            <form id="scheduleForm" enctype="multipart/form-data">
+                <!-- AI Caption Generator -->
+                <div class="ai-section">
+                    <h3>✨ Professional AI Caption Generator</h3>
+                    <div class="ai-input-group">
+                        <input type="text" id="aiPromptSchedule" class="ai-input" placeholder="Describe your post">
+                        <button type="button" class="btn btn-ai" id="generateAllBtnSchedule">Generate All Captions</button>
+                    </div>
+                </div>
+
+                <!-- Platform Selection -->
+                <div class="form-group">
+                    <label>🌐 Select Platforms *</label>
+                    <div class="platforms">
+                        <label class="platform-option">
+                            <input type="checkbox" name="platformsSchedule" value="linkedin" class="platform-checkbox-schedule">
+                            <span>💼 LinkedIn</span>
+                        </label>
+                        <label class="platform-option">
+                            <input type="checkbox" name="platformsSchedule" value="twitter" class="platform-checkbox-schedule">
+                            <span>🐦 Twitter/X</span>
+                        </label>
+                        <label class="platform-option">
+                            <input type="checkbox" name="platformsSchedule" value="instagram" class="platform-checkbox-schedule">
+                            <span>📸 Instagram</span>
+                        </label>
+                        <label class="platform-option">
+                            <input type="checkbox" name="platformsSchedule" value="facebook" class="platform-checkbox-schedule">
+                            <span>👥 Facebook</span>
+                        </label>
+                        <label class="platform-option">
+                            <input type="checkbox" name="platformsSchedule" value="pinterest" class="platform-checkbox-schedule">
+                            <span>📌 Pinterest</span>
+                        </label>
+                        <label class="platform-option">
+                            <input type="checkbox" name="platformsSchedule" value="youtube" class="platform-checkbox-schedule">
+                            <span>🎬 YouTube Video</span>
+                        </label>
+                        <label class="platform-option">
+                            <input type="checkbox" name="platformsSchedule" value="youtubepost" class="platform-checkbox-schedule">
+                            <span>📺 YouTube Post</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Platform-Specific Captions Schedule -->
+                <div class="platform-captions-container" id="platformCaptionsContainerSchedule">
+                    <div class="platform-captions">
+                        <h4>📝 Platform-Specific Captions</h4>
+                        
+                        <div class="platform-caption-item" id="caption-linkedin-schedule" style="display: none;">
+                            <label><span>💼 LinkedIn Caption</span></label>
+                            <textarea name="caption_linkedin" class="platform-caption-input-schedule" placeholder="Professional caption..."></textarea>
+                        </div>
+
+                        <div class="platform-caption-item" id="caption-twitter-schedule" style="display: none;">
+                            <label><span>🐦 Twitter Caption</span></label>
+                            <textarea name="caption_twitter" class="platform-caption-input-schedule" placeholder="Engaging caption..."></textarea>
+                        </div>
+
+                        <div class="platform-caption-item" id="caption-instagram-schedule" style="display: none;">
+                            <label><span>📸 Instagram Caption</span></label>
+                            <textarea name="caption_instagram" class="platform-caption-input-schedule" placeholder="Visual caption..."></textarea>
+                        </div>
+
+                        <div class="platform-caption-item" id="caption-facebook-schedule" style="display: none;">
+                            <label><span>👥 Facebook Caption</span></label>
+                            <textarea name="caption_facebook" class="platform-caption-input-schedule" placeholder="Friendly caption..."></textarea>
+                        </div>
+
+                        <div class="platform-caption-item" id="caption-pinterest-schedule" style="display: none;">
+                            <label><span>📌 Pinterest Title</span></label>
+                            <input type="text" name="pinterest_title" class="platform-caption-input-schedule" maxlength="100" placeholder="Title..." style="width: 100%; padding: 15px; border: 2px solid #e0e0e0; border-radius: 10px; margin-bottom: 10px;">
+                            <label><span>🔗 Link</span></label>
+                            <input type="url" name="pinterest_link" class="platform-caption-input-schedule" placeholder="https://..." style="width: 100%; padding: 15px; border: 2px solid #e0e0e0; border-radius: 10px; margin-bottom: 10px;">
+                            <label><span>📝 Description</span></label>
+                            <textarea name="caption_pinterest" class="platform-caption-input-schedule" placeholder="Description..."></textarea>
+                        </div>
+
+                        <div class="platform-caption-item" id="caption-youtube-schedule" style="display: none;">
+                            <label><span>🎬 YouTube Video Details</span></label>
+                            <div class="youtube-fields">
+                                <label>Video Title *</label>
+                                <input type="text" name="youtube_title" class="platform-caption-input-schedule" maxlength="100" placeholder="Video title...">
+                                <label>Description</label>
+                                <textarea name="youtube_description" class="platform-caption-input-schedule" rows="4" placeholder="Description..."></textarea>
+                                <label>Visibility</label>
+                                <select name="youtube_visibility" class="platform-caption-input-schedule">
+                                    <option value="public">Public</option>
+                                    <option value="unlisted">Unlisted</option>
+                                    <option value="private">Private</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="platform-caption-item" id="caption-youtubepost-schedule" style="display: none;">
+                            <label><span>📺 YouTube Post Caption</span></label>
+                            <textarea name="caption_youtubepost" class="platform-caption-input-schedule" placeholder="YouTube Community post..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Media Upload -->
+                <div class="form-group">
+                    <label>📷 Upload Image/Video</label>
+                    <input type="file" id="imageInputSchedule" name="image" accept="image/*,video/*" style="padding: 10px; border: 2px solid #e0e0e0; border-radius: 10px;">
+                    <div id="fileNameSchedule" style="margin-top: 10px; color: #666; font-size: 14px;"></div>
+                </div>
+
+                <!-- Schedule Section -->
+                <div class="schedule-section">
+                    <h3>⏰ Schedule Settings</h3>
+                    <div class="form-group">
+                        <label for="scheduleDateTime">📅 Select Date and Time *</label>
+                        <input type="datetime-local" id="scheduleDateTime" name="schedule_datetime" required>
+                    </div>
+                    <div class="quick-schedule">
+                        <button type="button" class="quick-btn" data-minutes="5">+5 min</button>
+                        <button type="button" class="quick-btn" data-minutes="15">+15 min</button>
+                        <button type="button" class="quick-btn" data-minutes="30">+30 min</button>
+                        <button type="button" class="quick-btn" data-hours="1">+1 hour</button>
+                        <button type="button" class="quick-btn" data-hours="3">+3 hours</button>
+                        <button type="button" class="quick-btn" data-days="1">+1 day</button>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-schedule" id="scheduleBtn">⏰ Schedule Post</button>
+            </form>
+
+            <!-- Loader -->
+            <div class="loader" id="loaderSchedule">
+                <div class="spinner"></div>
+                <p style="margin-top: 10px; color: #666;">Scheduling...</p>
+            </div>
+
+            <!-- Results -->
+            <div class="results" id="resultsSchedule">
+                <h3>📊 Schedule Status</h3>
+                <div id="resultsListSchedule"></div>
+            </div>
+        </div>
+
+        <!-- Scheduled Posts Tab -->
+        <div class="tab-content" id="scheduled-posts">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin: 0;">Your Scheduled Posts</h2>
+                <button class="btn btn-ai" onclick="loadScheduledPosts()" style="padding: 10px 20px;">🔄 Refresh</button>
+            </div>
+            
+            <div class="scheduled-posts-list" id="scheduledPostsList">
+                <div class="loader active">
+                    <div class="spinner"></div>
+                    <p style="margin-top: 10px; color: #666;">Loading...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const targetTab = this.getAttribute('data-tab');
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                document.getElementById(targetTab).classList.add('active');
+                if (targetTab === 'scheduled-posts') loadScheduledPosts();
+            });
+        });
+
+        // Platform checkbox handlers
+        document.querySelectorAll('.platform-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', updatePlatformCaptions);
+        });
+
+        // Platform checkbox handlers for Schedule
+        document.querySelectorAll('.platform-checkbox-schedule').forEach(checkbox => {
+            checkbox.addEventListener('change', updatePlatformCaptionsSchedule);
+        });
+
+        function updatePlatformCaptions() {
+            const selected = Array.from(document.querySelectorAll('.platform-checkbox:checked')).map(cb => cb.value);
+            const container = document.getElementById('platformCaptionsContainer');
+            
+            if (selected.length > 0) {
+                container.classList.add('show');
+                ['linkedin', 'twitter', 'instagram', 'facebook', 'pinterest', 'youtube', 'youtubepost'].forEach(platform => {
+                    const div = document.getElementById(`caption-${platform}`);
+                    div.style.display = selected.includes(platform) ? 'block' : 'none';
+                });
+            } else {
+                container.classList.remove('show');
+            }
+        }
+
+        function updatePlatformCaptionsSchedule() {
+            const selected = Array.from(document.querySelectorAll('.platform-checkbox-schedule:checked')).map(cb => cb.value);
+            const container = document.getElementById('platformCaptionsContainerSchedule');
+            
+            if (selected.length > 0) {
+                container.classList.add('show');
+                ['linkedin', 'twitter', 'instagram', 'facebook', 'pinterest', 'youtube', 'youtubepost'].forEach(platform => {
+                    const div = document.getElementById(`caption-${platform}-schedule`);
+                    div.style.display = selected.includes(platform) ? 'block' : 'none';
+                });
+            } else {
+                container.classList.remove('show');
+            }
+        }
+
+        // File input handler
+        document.getElementById('imageInput').addEventListener('change', function(e) {
+            const fileName = document.getElementById('fileName');
+            fileName.textContent = e.target.files.length > 0 ? `Selected: ${e.target.files[0].name}` : '';
+        });
+
+        // File input handler for Schedule
+        document.getElementById('imageInputSchedule').addEventListener('change', function(e) {
+            const fileName = document.getElementById('fileNameSchedule');
+            fileName.textContent = e.target.files.length > 0 ? `Selected: ${e.target.files[0].name}` : '';
+        });
+
+        // Generate All Captions for Post Now
+        document.getElementById('generateAllBtn').addEventListener('click', async function() {
+            const prompt = document.getElementById('aiPrompt').value.trim();
+            const generateBtn = this;
+            const selectedPlatforms = Array.from(document.querySelectorAll('.platform-checkbox:checked')).map(cb => cb.value);
+
+            if (!prompt) {
+                alert('Please enter a prompt');
+                return;
+            }
+
+            if (selectedPlatforms.length === 0) {
+                alert('Please select at least one platform first');
+                return;
+            }
+
+            generateBtn.disabled = true;
+            generateBtn.textContent = 'Generating...';
+
+            try {
+                const response = await fetch('/generate-all-captions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: prompt, platforms: selectedPlatforms })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    Object.keys(data.captions).forEach(platform => {
+                        if (platform === 'youtube') {
+                            const titleInput = document.querySelector('input[name="youtube_title"]');
+                            const descInput = document.querySelector('textarea[name="youtube_description"]');
+                            if (titleInput && descInput) {
+                                const caption = data.captions[platform];
+                                const lines = caption.split('\n');
+                                titleInput.value = lines[0].substring(0, 100);
+                                descInput.value = lines.slice(1).join('\n');
+                            }
+                        } else {
+                            const textarea = document.querySelector(`textarea[name="caption_${platform}"]`);
+                            if (textarea) {
+                                textarea.value = data.captions[platform];
+                            }
+                        }
+                    });
+                    alert('Captions generated successfully!');
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.textContent = 'Generate All Captions';
+            }
+        });
+
+        // Generate All Captions for Schedule
+        document.getElementById('generateAllBtnSchedule').addEventListener('click', async function() {
+            const prompt = document.getElementById('aiPromptSchedule').value.trim();
+            const generateBtn = this;
+            const selectedPlatforms = Array.from(document.querySelectorAll('.platform-checkbox-schedule:checked')).map(cb => cb.value);
+
+            if (!prompt) {
+                alert('Please enter a prompt');
+                return;
+            }
+
+            if (selectedPlatforms.length === 0) {
+                alert('Please select at least one platform first');
+                return;
+            }
+
+            generateBtn.disabled = true;
+            generateBtn.textContent = 'Generating...';
+
+            try {
+                const response = await fetch('/generate-all-captions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: prompt, platforms: selectedPlatforms })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    Object.keys(data.captions).forEach(platform => {
+                        if (platform === 'youtube') {
+                            const titleInput = document.querySelector('#caption-youtube-schedule input[name="youtube_title"]');
+                            const descInput = document.querySelector('#caption-youtube-schedule textarea[name="youtube_description"]');
+                            if (titleInput && descInput) {
+                                const caption = data.captions[platform];
+                                const lines = caption.split('\n');
+                                titleInput.value = lines[0].substring(0, 100);
+                                descInput.value = lines.slice(1).join('\n');
+                            }
+                        } else {
+                            const textareas = document.querySelectorAll('.platform-caption-input-schedule');
+                            textareas.forEach(textarea => {
+                                if (textarea.name === `caption_${platform}`) {
+                                    textarea.value = data.captions[platform];
+                                }
+                            });
+                        }
+                    });
+                    alert('Captions generated successfully!');
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.textContent = 'Generate All Captions';
+            }
+        });
+
+        // Quick schedule buttons
+        document.querySelectorAll('.quick-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const now = new Date();
+                
+                if (this.dataset.minutes) {
+                    now.setMinutes(now.getMinutes() + parseInt(this.dataset.minutes));
+                } else if (this.dataset.hours) {
+                    now.setHours(now.getHours() + parseInt(this.dataset.hours));
+                } else if (this.dataset.days) {
+                    now.setDate(now.getDate() + parseInt(this.dataset.days));
+                }
+                
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                
+                document.getElementById('scheduleDateTime').value = `${year}-${month}-${day}T${hours}:${minutes}`;
+            });
+        });
+
+        // Platform selection visual feedback
+        document.querySelectorAll('.platform-option').forEach(option => {
+            const checkbox = option.querySelector('input[type="checkbox"]');
+            option.addEventListener('click', function(e) {
+                if (e.target !== checkbox) {
+                    checkbox.checked = !checkbox.checked;
+                    checkbox.dispatchEvent(new Event('change'));
+                }
+                option.classList.toggle('selected', checkbox.checked);
+            });
+            checkbox.addEventListener('change', function() {
+                option.classList.toggle('selected', checkbox.checked);
+            });
+        });
+
+        // Form submission
+        document.getElementById('postForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const platforms = Array.from(document.querySelectorAll('.platform-checkbox:checked')).map(cb => cb.value);
+            if (platforms.length === 0) {
+                alert('Please select at least one platform');
+                return;
+            }
+
+            const formData = new FormData(this);
+            platforms.forEach(p => formData.append('platforms[]', p));
+
+            document.getElementById('loader').classList.add('active');
+            document.getElementById('postBtn').disabled = true;
+
+            try {
+                const response = await fetch('/post', { method: 'POST', body: formData });
+                const data = await response.json();
+
+                document.getElementById('loader').classList.remove('active');
+                document.getElementById('postBtn').disabled = false;
+
+                const resultsList = document.getElementById('resultsList');
+                resultsList.innerHTML = '';
+
+                if (data.success && data.results) {
+                    Object.keys(data.results).forEach(platform => {
+                        const result = data.results[platform];
+                        const item = document.createElement('div');
+                        item.className = `result-item ${result.success ? 'success' : 'error'}`;
+                        item.innerHTML = `<strong>${platform.toUpperCase()}</strong><span>${result.message}</span>`;
+                        resultsList.appendChild(item);
+                    });
+                } else {
+                    const item = document.createElement('div');
+                    item.className = 'result-item error';
+                    item.innerHTML = `<span>Error: ${data.message}</span>`;
+                    resultsList.appendChild(item);
+                }
+
+                document.getElementById('results').style.display = 'block';
+            } catch (error) {
+                document.getElementById('loader').classList.remove('active');
+                document.getElementById('postBtn').disabled = false;
+                alert('Error: ' + error.message);
+            }
+        });
+
+        // Form submission for Schedule
+        document.getElementById('scheduleForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const platforms = Array.from(document.querySelectorAll('.platform-checkbox-schedule:checked')).map(cb => cb.value);
+            const scheduleDateTime = document.getElementById('scheduleDateTime').value;
+
+            if (platforms.length === 0) {
+                alert('Please select at least one platform');
+                return;
+            }
+
+            if (!scheduleDateTime) {
+                alert('Please select a date and time');
+                return;
+            }
+
+            const formData = new FormData(this);
+            platforms.forEach(p => formData.append('platforms[]', p));
+            formData.append('schedule_datetime', scheduleDateTime);
+
+            document.getElementById('loaderSchedule').classList.add('active');
+            document.getElementById('scheduleBtn').disabled = true;
+            document.getElementById('resultsSchedule').style.display = 'none';
+
+            try {
+                const response = await fetch('/schedule-post', { method: 'POST', body: formData });
+                const data = await response.json();
+
+                document.getElementById('loaderSchedule').classList.remove('active');
+                document.getElementById('scheduleBtn').disabled = false;
+
+                const resultsList = document.getElementById('resultsListSchedule');
+                resultsList.innerHTML = '';
+
+                const item = document.createElement('div');
+                item.className = `result-item ${data.success ? 'success' : 'error'}`;
+                item.innerHTML = `<span>${data.message}</span>`;
+                resultsList.appendChild(item);
+
+                document.getElementById('resultsSchedule').style.display = 'block';
+
+                if (data.success) {
+                    document.getElementById('scheduleForm').reset();
+                    document.getElementById('fileNameSchedule').textContent = '';
+                    document.querySelectorAll('.platform-checkbox-schedule').forEach(cb => {
+                        cb.checked = false;
+                        cb.closest('.platform-option').classList.remove('selected');
+                    });
+                    document.getElementById('platformCaptionsContainerSchedule').classList.remove('show');
+                    
+                    setTimeout(() => {
+                        document.querySelector('.tab[data-tab="scheduled-posts"]').click();
+                    }, 2000);
+                }
+            } catch (error) {
+                document.getElementById('loaderSchedule').classList.remove('active');
+                document.getElementById('scheduleBtn').disabled = false;
+                alert('Error: ' + error.message);
+            }
+        });
+
+        // Load scheduled posts
+        async function loadScheduledPosts() {
+            const container = document.getElementById('scheduledPostsList');
+            container.innerHTML = '<div class="loader active"><div class="spinner"></div><p style="margin-top:10px;color:#666">Loading...</p></div>';
+            
+            try {
+                const response = await fetch('/get-scheduled-posts');
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (data.posts.length === 0) {
+                        container.innerHTML = '<div style="text-align:center;padding:40px;color:#999"><h3>No Scheduled Posts</h3></div>';
+                    } else {
+                        container.innerHTML = '';
+                        data.posts.forEach(post => {
+                            container.appendChild(createScheduledPostElement(post));
+                        });
+                    }
+                }
+            } catch (error) {
+                container.innerHTML = `<div class="result-item error"><span>Error: ${error.message}</span></div>`;
+            }
+        }
+
+        function createScheduledPostElement(post) {
+            const div = document.createElement('div');
+            div.className = 'scheduled-post-item';
+            
+            const date = new Date(post.scheduled_time);
+            const formattedDate = date.toLocaleString('en-US', {
+                month: 'short', day: 'numeric', year: 'numeric',
+                hour: 'numeric', minute: '2-digit', hour12: true
+            });
+            
+            const platformIcons = {
+                linkedin: '💼', twitter: '🐦', instagram: '📸',
+                facebook: '👥', pinterest: '📌', youtube: '🎬', youtubepost: '📺'
+            };
+            
+            const platformsHTML = post.platforms.map(p => 
+                `<span class="platform-badge">${platformIcons[p] || ''} ${p}</span>`
+            ).join('');
+            
+            let captionsHTML = '';
+            if (post.captions) {
+                captionsHTML = '<div style="margin-top:15px">';
+                Object.keys(post.captions).forEach(platform => {
+                    captionsHTML += `
+                        <div style="margin-bottom:10px;padding:10px;background:#f8f9fa;border-radius:8px">
+                            <strong style="color:#667eea">${platformIcons[platform]} ${platform}:</strong>
+                            <p style="margin:5px 0 0 0;color:#666;font-size:14px">${escapeHtml(post.captions[platform])}</p>
+                        </div>`;
+                });
+                captionsHTML += '</div>';
+            }
+            
+            const actionButtons = post.status === 'scheduled' 
+                ? `<div class="post-actions"><button class="btn-cancel" onclick="cancelScheduledPost('${post.id}')">Cancel</button></div>`
+                : '';
+            
+            div.innerHTML = `
+                <div class="scheduled-post-header">
+                    <div class="scheduled-time">⏰ ${formattedDate}</div>
+                    <span class="status-badge status-${post.status}">${post.status.toUpperCase()}</span>
+                </div>
+                ${captionsHTML}
+                <div class="scheduled-platforms">${platformsHTML}</div>
+                ${actionButtons}
+            `;
+            
+            return div;
+        }
+
+        async function cancelScheduledPost(postId) {
+            if (!confirm('Cancel this post?')) return;
+            
+            try {
+                const response = await fetch(`/cancel-scheduled-post/${postId}`, { method: 'DELETE' });
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Post cancelled');
+                    loadScheduledPosts();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>
